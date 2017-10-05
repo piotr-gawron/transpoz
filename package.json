@@ -1,0 +1,32 @@
+{
+  "name": "transpoz",
+  "version": "0.0.1",
+  "description": "",
+  "main": "src/server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/piotr-gawron/transpoz.git"
+  },
+  "author": "Piotr Gawron",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/piotr-gawron/transpoz/issues"
+  },
+  "homepage": "https://github.com/piotr-gawron/transpoz#readme",
+  "dependencies": {
+    "express": "^4.16.1",
+    "jszip": "^3.1.4",
+    "sequelize": "^4.13.5",
+    "sqlite3": "^3.1.13"
+  },
+  "devDependencies": {
+    "@types/express": "^4.0.37",
+    "@types/fs-extra": "^4.0.2",
+    "@types/sequelize": "^4.0.76",
+    "fs-extra": "^4.0.2",
+    "mocha": "^4.0.0"
+  }
+}
