@@ -15,8 +15,8 @@ var knownColumns = [
   {name: "agency_lang", field: "language"}
 ];
 
-AgencyParser.prototype.parse = function (content) {
-  return new CsvParser().parse({content: content, knownColumns: knownColumns, modelObject: Agency});
+AgencyParser.prototype.parse = function (content, dataSet) {
+  return new CsvParser().parse({content: content, knownColumns: knownColumns, modelObject: Agency, dataSet: dataSet});
 };
 
 module.exports = AgencyParser;

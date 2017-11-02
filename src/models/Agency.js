@@ -1,6 +1,7 @@
 var Sequelize = require("sequelize");
 
 var AbstractObject = require("./AbstractObject");
+var DataSet = require("./DataSet");
 
 
 module.exports = AbstractObject.defineObject('agency', {
@@ -19,4 +20,6 @@ module.exports = AbstractObject.defineObject('agency', {
   language: {
     type: Sequelize.STRING
   }
+}, function (modelObject) {
+  return modelObject.getClass().belongsTo(DataSet.getClass(), {as: "dataSet"});
 });

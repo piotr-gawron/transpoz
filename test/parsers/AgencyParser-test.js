@@ -15,8 +15,12 @@ describe("AgencyParser", function () {
   describe("parse", function () {
     it("simple", function () {
       var parser = new AgencyParser();
-      return fs.readFile("testFiles/agency/agency.txt").then(function (data) {
-        return parser.parse(data);
+      var dataSet;
+      return helper.createDataSet({agency: true}).then(function (result) {
+        dataSet = result;
+        return fs.readFile("testFiles/agency/agency.txt");
+      }).then(function (data) {
+        return parser.parse(data, dataSet);
       }).then(function (result) {
         assert.ok(result);
         assert.equal(8, result.length);

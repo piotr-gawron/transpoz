@@ -1,5 +1,6 @@
 var Agency = require("../models/Agency");
 var DataSet = require("../models/DataSet");
+var Route = require("../models/Route");
 var Stop = require("../models/Stop");
 
 function DbUtils() {
@@ -16,9 +17,13 @@ DbUtils.prototype.getConnection = function () {
 
 DbUtils.prototype.initDb = function () {
   var db = this.getConnection();
-  Agency.setConnection(db);
-  DataSet.setConnection(db);
-  Stop.setConnection(db);
+  return DataSet.setConnection(db).then(function(){
+    return Agency.setConnection(db);
+  }).then(function(){
+    return Stop.setConnection(db);
+  }).then(function(){
+    return Route.setConnection(db);
+  });
 };
 
 module.exports = new DbUtils();
