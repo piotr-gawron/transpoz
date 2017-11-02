@@ -36,8 +36,8 @@ describe("AgencyParser", function () {
     });
     it("invalid", function () {
       var parser = new AgencyParser();
-      return parser.parse("unk column\n1").then(function (result) {
-        assert.ok(false);
+      return parser.parse("unk column\n1").then(function () {
+        assert.false("Exception expected");
       }, function (error) {
         assert.ok(error.message.indexOf("Unknown column") >= 0)
       });

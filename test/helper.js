@@ -7,6 +7,8 @@ var CalendarService = require('../src/models/CalendarService');
 var DbUtils = require('../src/dao/DbUtils');
 var DataSet = require('../src/models/DataSet');
 var Route = require('../src/models/Route');
+var Stop = require('../src/models/Stop');
+var Trip = require('../src/models/Trip');
 
 
 function initDbConnection() {
@@ -48,6 +50,47 @@ function createDataSet(params) {
     var promise = Promise.resolve();
     if (params.route) {
       promise = Route.create({"route_id": 1, "dataSetId": dataSet.id});
+    }
+    return promise;
+  }).then(function () {
+    var promise = Promise.resolve();
+    if (params.trip) {
+      promise = Trip.create({"trip_id": "1_23733751^N+", "dataSetId": dataSet.id});
+    }
+    return promise;
+  }).then(function () {
+    var promise = Promise.resolve();
+    if (params.stops) {
+      promise = Stop.bulkCreate([{"id": 1715},
+        {"id": 1712},
+        {"id": 2992},
+        {"id": 1708},
+        {"id": 1709},
+        {"id": 81},
+        {"id": 79},
+        {"id": 77},
+        {"id": 76},
+        {"id": 73},
+        {"id": 4479},
+        {"id": 102},
+        {"id": 99},
+        {"id": 94},
+        {"id": 103},
+        {"id": 105},
+        {"id": 187},
+        {"id": 183},
+        {"id": 235},
+        {"id": 237},
+        {"id": 201},
+        {"id": 204},
+        {"id": 206},
+        {"id": 208},
+        {"id": 210},
+        {"id": 3037},
+        {"id": 3013},
+        {"id": 217},
+        {"id": 220},
+        {"id": 1}], {raw: true});
     }
     return promise;
   }).then(function () {

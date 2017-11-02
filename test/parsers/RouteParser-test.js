@@ -29,6 +29,7 @@ describe("RouteParser", function () {
         var route = result[0];
         assert.equal(1, route.route_id);
         assert.equal("1", route.shortName);
+        // noinspection SpellCheckingInspection
         assert.equal("JUNIKOWO - FRANOWO|FRANOWO - JUNIKOWO", route.longName);
         assert.ok(route.description);
         assert.equal(0, route.type);
@@ -43,8 +44,8 @@ describe("RouteParser", function () {
       var parser = new RouteParser();
       return fs.readFile("testFiles/routes/routes.txt").then(function (data) {
         return parser.parse(data);
-      }).then(function (result) {
-        assert.ok(false);
+      }).then(function () {
+        assert.false("Exception expected");
       }, function (error) {
         assert.ok(error.message.indexOf("dataSet must be defined") >= 0);
       });
@@ -57,7 +58,7 @@ describe("RouteParser", function () {
         return fs.readFile("testFiles/routes/routes.txt");
       }).then(function (data) {
         return parser.parse(data, dataSet);
-      }).then(function (result) {
+      }).then(function () {
         assert.false("Error expected");
       }, function (error) {
         assert.ok(error.message.indexOf("Cannot find element") >= 0);

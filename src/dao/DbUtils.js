@@ -3,6 +3,7 @@ var CalendarService = require("../models/CalendarService");
 var DataSet = require("../models/DataSet");
 var Route = require("../models/Route");
 var Stop = require("../models/Stop");
+var StopTime = require("../models/StopTime");
 var Trip = require("../models/Trip");
 
 
@@ -30,6 +31,8 @@ DbUtils.prototype.initDb = function () {
     return CalendarService.setConnection(db);
   }).then(function () {
     return Trip.setConnection(db);
+  }).then(function () {
+    return StopTime.setConnection(db);
   });
 };
 

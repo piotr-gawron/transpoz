@@ -17,6 +17,10 @@ function defineObject(name, definition, onConnectionSet) {
     return DbObject.create(params);
   }
 
+  function bulkCreate(params) {
+    return DbObject.bulkCreate(params);
+  }
+
   function getClass() {
     return DbObject;
   }
@@ -24,6 +28,7 @@ function defineObject(name, definition, onConnectionSet) {
   result = {
     setConnection: setConnection,
     create: create,
+    bulkCreate: bulkCreate,
     getClass: getClass
   };
   return result;

@@ -24,6 +24,7 @@ describe("StopParser", function () {
         var stop = result[1];
         assert.equal(4, stop.id);
         assert.equal("MT72", stop.code);
+        // noinspection SpellCheckingInspection
         assert.equal("Most Teatralny", stop.name);
         assert.equal(52.4107374400, stop.latitude);
         assert.equal(16.9126471700, stop.longitude);

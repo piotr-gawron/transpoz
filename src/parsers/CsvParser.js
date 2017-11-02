@@ -60,8 +60,11 @@ CsvParser.prototype.parse = function (params) {
               if (columnType.getClass().rawAttributes.dataSetId) {
                 where["dataSetId"] = dataSet.id;
               }
-
-              where[header[j]] = row[j];
+              if (columnId.typeField !== undefined) {
+                where[columnId.typeField] = row[j];
+              } else {
+                where[header[j]] = row[j];
+              }
               var promise = columnType.getClass().findAll({
                 where: where
               }).then(function (result) {
@@ -89,7 +92,7 @@ CsvParser.intToBoolean = function (variable) {
 
 CsvParser.stringToDate = function (variable) {
   return variable.substr(0, 4) + "-" + variable.substr(4, 2) + "-" + variable.substr(6, 2);
-}
+};
 
 
 module.exports = CsvParser;

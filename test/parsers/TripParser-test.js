@@ -27,6 +27,7 @@ describe("TripParser", function () {
         assert.ok(result[1] instanceof Trip.getClass());
         trip = result[1];
         assert.equal("1_23733753^N+", trip.trip_id);
+        // noinspection SpellCheckingInspection
         assert.equal("Franowo", trip.headsign);
         assert.equal("0", trip.direction);
         assert.ok(trip.wheelchairAccess);
@@ -40,8 +41,8 @@ describe("TripParser", function () {
     });
     it("invalid", function () {
       var parser = new TripParser();
-      return parser.parse("unk column\n1").then(function (result) {
-        assert.ok(false);
+      return parser.parse("unk column\n1").then(function () {
+        assert.false("Exception expected");
       }, function (error) {
         assert.ok(error.message.indexOf("Unknown column") >= 0)
       });
