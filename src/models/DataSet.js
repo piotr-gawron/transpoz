@@ -1,22 +1,9 @@
 var Sequelize = require("sequelize");
 
-var DbObject;
+var AbstractObject = require("./AbstractObject");
 
-function setConnection(connection) {
-  DbObject = connection.define('data_set', {
-    name: {
-      type: Sequelize.STRING
-    }
-  });
-  console.log(DbObject);
-}
-
-function create() {
-  console.log(DbObject);
-  return DbObject.create();
-}
-
-module.exports = {
-  setConnection: setConnection,
-  create: create
-};
+module.exports = AbstractObject.defineObject('data_set', {
+  name: {
+    type: Sequelize.STRING
+  }
+});

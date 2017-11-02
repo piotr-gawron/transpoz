@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/piotr-gawron/transpoz#readme",
   "dependencies": {
+    "bluebird": "^3.5.1",
+    "csv-parse": "^2.0.0",
     "express": "^4.16.1",
     "istanbul": "^0.4.5",
     "jszip": "^3.1.4",

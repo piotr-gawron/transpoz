@@ -6,7 +6,8 @@ function initDbConnection() {
   const sequelize = new Sequelize('sqlite://sqlite/db_test', {
     dialectOptions: {
       multipleStatements: true
-    }
+    },
+    logging: false
   });
   return sequelize.authenticate().then(function () {
     DbUtils.setConnection(sequelize);
