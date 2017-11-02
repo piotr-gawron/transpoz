@@ -1,0 +1,5 @@
+route_id,service_id,trip_id,trip_headsign,direction_id,shape_id,wheelchair_accessible
+1,1,"1_23733751^N+","Franowo",0,1603399,1
+1,1,"1_23733753^N+","Franowo",0,1603399,1
+1,1,"1_23733755^N+","Franowo",0,1603399,1
+1,1,"1_23733757^N+","Franowo",0,1603399,1

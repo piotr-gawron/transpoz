@@ -1,7 +1,10 @@
 var Agency = require("../models/Agency");
+var CalendarService = require("../models/CalendarService");
 var DataSet = require("../models/DataSet");
 var Route = require("../models/Route");
 var Stop = require("../models/Stop");
+var Trip = require("../models/Trip");
+
 
 function DbUtils() {
 
@@ -17,12 +20,16 @@ DbUtils.prototype.getConnection = function () {
 
 DbUtils.prototype.initDb = function () {
   var db = this.getConnection();
-  return DataSet.setConnection(db).then(function(){
+  return DataSet.setConnection(db).then(function () {
     return Agency.setConnection(db);
-  }).then(function(){
+  }).then(function () {
     return Stop.setConnection(db);
-  }).then(function(){
+  }).then(function () {
     return Route.setConnection(db);
+  }).then(function () {
+    return CalendarService.setConnection(db);
+  }).then(function () {
+    return Trip.setConnection(db);
   });
 };
 

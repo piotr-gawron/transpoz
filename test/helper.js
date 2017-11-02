@@ -3,8 +3,10 @@ var Promise = require("bluebird");
 var Sequelize = require('sequelize');
 
 var Agency = require('../src/models/Agency');
+var CalendarService = require('../src/models/CalendarService');
 var DbUtils = require('../src/dao/DbUtils');
 var DataSet = require('../src/models/DataSet');
+var Route = require('../src/models/Route');
 
 
 function initDbConnection() {
@@ -33,9 +35,19 @@ function createDataSet(params) {
     dataSet = result;
     var promise = Promise.resolve();
     if (params.agency) {
-      promise = Agency.create({"agency_id": 8}).then(function (agency) {
-        return agency.setDataSet(dataSet);
-      })
+      promise = Agency.create({"agency_id": 8, "dataSetId": dataSet.id});
+    }
+    return promise;
+  }).then(function () {
+    var promise = Promise.resolve();
+    if (params.calendarService) {
+      promise = CalendarService.create({"service_id": 1, "dataSetId": dataSet.id});
+    }
+    return promise;
+  }).then(function () {
+    var promise = Promise.resolve();
+    if (params.route) {
+      promise = Route.create({"route_id": 1, "dataSetId": dataSet.id});
     }
     return promise;
   }).then(function () {

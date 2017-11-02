@@ -15,18 +15,22 @@ CsvParser.prototype.parse = function (params) {
     var rows = data;
     var header = rows[0];
     var fieldByColumnId = [];
+    var transformationFunctions = [];
 
     for (i = 0; i < header.length; i++) {
       var columnId = undefined;
+      var transformationFunction = undefined;
       for (j = 0; j < knownColumns.length; j++) {
         if (knownColumns[j].name === header[i]) {
           columnId = knownColumns[j].field;
+          transformationFunction = knownColumns[j].transformationFunction;
         }
       }
       if (columnId === undefined) {
         return Promise.reject(new Error("Unknown column in " + modelObject.getClass() + " list: " + header[i]));
       }
       fieldByColumnId[i] = columnId;
+      transformationFunctions[i] = transformationFunction;
     }
 
     rows.splice(0, 1);
@@ -43,26 +47,32 @@ CsvParser.prototype.parse = function (params) {
         var columnId = fieldByColumnId[j];
         if (columnId !== null) {
           if (typeof columnId === "string") {
-            objectInitialData[columnId] = row[j];
-          } else {
-            var columnType = columnId.type;
-            var fieldName = columnId.name;
-            var where = {};
-            if (columnType.getClass().rawAttributes.dataSetId) {
-              where["dataSetId"] = dataSet.id;
+            var value = row[j];
+            if (transformationFunctions[j] !== undefined) {
+              value = transformationFunctions[j](value);
             }
-
-            where[header[j]] = row[j];
-            var promise = columnType.getClass().findAll({
-              where: where
-            }).then(function (result) {
-              if (result.length !== 1) {
-                return Promise.reject(new Error("Cannot find element for query: " + JSON.stringify(where)));
-              } else {
-                objectInitialData[fieldName] = result[0].id;
+            objectInitialData[columnId] = value;
+          } else {
+            (function x() {
+              var columnType = columnId.type;
+              var fieldName = columnId.name;
+              var where = {};
+              if (columnType.getClass().rawAttributes.dataSetId) {
+                where["dataSetId"] = dataSet.id;
               }
-            });
-            promises.push(promise);
+
+              where[header[j]] = row[j];
+              var promise = columnType.getClass().findAll({
+                where: where
+              }).then(function (result) {
+                if (result.length !== 1) {
+                  return Promise.reject(new Error("Cannot find element for query: " + JSON.stringify(where)));
+                } else {
+                  objectInitialData[fieldName] = result[0].id;
+                }
+              });
+              promises.push(promise);
+            })();
           }
         }
       }
@@ -72,5 +82,14 @@ CsvParser.prototype.parse = function (params) {
     });
   });
 };
+
+CsvParser.intToBoolean = function (variable) {
+  return variable > 0;
+};
+
+CsvParser.stringToDate = function (variable) {
+  return variable.substr(0, 4) + "-" + variable.substr(4, 2) + "-" + variable.substr(6, 2);
+}
+
 
 module.exports = CsvParser;
