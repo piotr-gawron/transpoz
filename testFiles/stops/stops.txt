@@ -1,0 +1,7 @@
+stop_id,stop_code,stop_name,stop_lat,stop_lon,zone_id
+1,"FRWO41","Franowo",52.3814339100,17.0003228700,A
+4,"MT72","Most Teatralny",52.4107374400,16.9126471700,A
+5,"MT44","Most Teatralny",52.4109651200,16.9137425100,A
+6,"MT43","Most Teatralny",52.4103354900,16.9143484000,A
+7,"POZN41","Poznańska",52.4133151800,16.9151929400,A
+8,"POZN42","Poznańska",52.4140944800,16.9162984600,A
