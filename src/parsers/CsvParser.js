@@ -13,6 +13,7 @@ CsvParser.prototype.parse = function (params) {
   var dataSet = params.dataSet;
 
   var columnByColumnId = [];
+  var objectsToCreate = [];
   var rows;
   return parse(content).then(function (data) {
     var i, j;
@@ -40,32 +41,41 @@ CsvParser.prototype.parse = function (params) {
     }
     return Promise.all(promises);
   }).then(function () {
-    var objectsToCreate = [];
     for (var i = 1; i < rows.length; i++) {
       var row = rows[i];
-      var objectInitialData = {};
-      if (modelObject.getClass().rawAttributes.dataSetId) {
-        if (dataSet === undefined) {
-          return Promise.reject(new Error("dataSet must be defined"));
+      if (row.length > 1) {
+        var objectInitialData = {};
+        if (modelObject.getClass().rawAttributes.dataSetId) {
+          if (dataSet === undefined) {
+            return Promise.reject(new Error("dataSet must be defined"));
+          }
+          objectInitialData["dataSetId"] = dataSet.id;
         }
-        objectInitialData["dataSetId"] = dataSet.id;
-      }
-      for (j = 0; j < columnByColumnId.length; j++) {
-        var column = columnByColumnId[j];
-        if (column.field !== null) {
-          var value = row[j];
-          if (typeof column.field === "string") {
-            if (column.transformationFunction !== undefined) {
-              value = column.transformationFunction(value);
+        for (j = 0; j < columnByColumnId.length; j++) {
+          var column = columnByColumnId[j];
+          if (column.field !== null) {
+            var value = row[j];
+            if (typeof column.field === "string") {
+              if (column.transformationFunction !== undefined) {
+                value = column.transformationFunction(value);
+              }
+              objectInitialData[column.field] = value;
+            } else {
+              objectInitialData[column.field.name] = self.getDataForRow(column, value);
             }
-            objectInitialData[column.field] = value;
-          } else {
-            objectInitialData[column.field.name] = self.getDataForRow(column, value);
           }
         }
+        objectsToCreate.push(objectInitialData);
       }
-      objectsToCreate.push(objectInitialData);
     }
+    var validatePromise = Promise.resolve();
+    if (objectsToCreate.length > 0) {
+      if (objectsToCreate[0].id !== undefined) {
+        validatePromise = self.validate(objectsToCreate, modelObject);
+      }
+    }
+    return validatePromise;
+  }).then(function () {
     return modelObject.bulkCreate(objectsToCreate);
   });
 };
@@ -101,6 +111,23 @@ CsvParser.prototype.getDataForRow = function (column, key) {
     throw new Error("Cannot find element with id: " + key);
   }
   return value;
+};
+
+CsvParser.prototype.validate = function (data, modelObject) {
+  console.log("validate " + modelObject.getClass().getTableName());
+  return modelObject.getClass().findAll().then(function (dataInDb) {
+    var dataInDbById = {};
+    var i;
+    for (i = 0; i < dataInDb.length; i++) {
+      var entry = dataInDb[i];
+      dataInDbById[entry.id] = entry;
+    }
+    for (i = data.length - 1; i >= 0; i--) {
+      if (dataInDbById[data[i].id] !== undefined) {
+        data.splice(i, 1);
+      }
+    }
+  });
 };
 
 CsvParser.intToBoolean = function (variable) {
