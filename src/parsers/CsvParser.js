@@ -2,40 +2,47 @@ var Promise = require('bluebird');
 var parse = Promise.promisify(require('csv-parse'));
 
 function CsvParser() {
-
+  this._cachedData = {};
 }
 
 CsvParser.prototype.parse = function (params) {
+  var self = this;
   var content = params.content;
   var modelObject = params.modelObject;
   var knownColumns = params.knownColumns;
   var dataSet = params.dataSet;
+
+  var columnByColumnId = [];
+  var rows;
   return parse(content).then(function (data) {
     var i, j;
-    var rows = data;
+    rows = data;
     var header = rows[0];
-    var fieldByColumnId = [];
-    var transformationFunctions = [];
+    var promises = [];
+
 
     for (i = 0; i < header.length; i++) {
-      var columnId = undefined;
+      var column = undefined;
       var transformationFunction = undefined;
       for (j = 0; j < knownColumns.length; j++) {
         if (knownColumns[j].name === header[i]) {
-          columnId = knownColumns[j].field;
-          transformationFunction = knownColumns[j].transformationFunction;
+          column = knownColumns[j];
         }
       }
-      if (columnId === undefined) {
+      if (column === undefined) {
         return Promise.reject(new Error("Unknown column in " + modelObject.getClass() + " list: " + header[i]));
       }
-      fieldByColumnId[i] = columnId;
-      transformationFunctions[i] = transformationFunction;
-    }
+      columnByColumnId[i] = column;
 
-    rows.splice(0, 1);
-    return Promise.map(rows, function (row) {
-      var promises = [];
+      if (column.field !== null && typeof column.field !== "string") {
+        promises.push(self.getDataForColumn(column, dataSet));
+      }
+    }
+    return Promise.all(promises);
+  }).then(function () {
+    var objectsToCreate = [];
+    for (var i = 1; i < rows.length; i++) {
+      var row = rows[i];
       var objectInitialData = {};
       if (modelObject.getClass().rawAttributes.dataSetId) {
         if (dataSet === undefined) {
@@ -43,47 +50,57 @@ CsvParser.prototype.parse = function (params) {
         }
         objectInitialData["dataSetId"] = dataSet.id;
       }
-      for (j = 0; j < fieldByColumnId.length; j++) {
-        var columnId = fieldByColumnId[j];
-        if (columnId !== null) {
-          if (typeof columnId === "string") {
-            var value = row[j];
-            if (transformationFunctions[j] !== undefined) {
-              value = transformationFunctions[j](value);
+      for (j = 0; j < columnByColumnId.length; j++) {
+        var column = columnByColumnId[j];
+        if (column.field !== null) {
+          var value = row[j];
+          if (typeof column.field === "string") {
+            if (column.transformationFunction !== undefined) {
+              value = column.transformationFunction(value);
             }
-            objectInitialData[columnId] = value;
+            objectInitialData[column.field] = value;
           } else {
-            (function x() {
-              var columnType = columnId.type;
-              var fieldName = columnId.name;
-              var where = {};
-              if (columnType.getClass().rawAttributes.dataSetId) {
-                where["dataSetId"] = dataSet.id;
-              }
-              if (columnId.typeField !== undefined) {
-                where[columnId.typeField] = row[j];
-              } else {
-                where[header[j]] = row[j];
-              }
-              var promise = columnType.getClass().findAll({
-                where: where
-              }).then(function (result) {
-                if (result.length !== 1) {
-                  return Promise.reject(new Error("Cannot find element for query: " + JSON.stringify(where)));
-                } else {
-                  objectInitialData[fieldName] = result[0].id;
-                }
-              });
-              promises.push(promise);
-            })();
+            objectInitialData[column.field.name] = self.getDataForRow(column, value);
           }
         }
       }
-      return Promise.all(promises).then(function () {
-        return modelObject.create(objectInitialData);
-      });
-    });
+      objectsToCreate.push(objectInitialData);
+    }
+    return modelObject.bulkCreate(objectsToCreate);
   });
+};
+
+CsvParser.prototype.getDataForColumn = function (column, dataSet) {
+  var self = this;
+  var columnType = column.field.type;
+  var where = {};
+  if (columnType.getClass().rawAttributes.dataSetId) {
+    if (dataSet === undefined) {
+      return Promise.reject(new Error("dataSet must be defined"));
+    }
+    where["dataSetId"] = dataSet.id;
+  }
+  return columnType.getClass().findAll({
+    where: where
+  }).then(function (elements) {
+    var data = {};
+    self._cachedData[columnType.getClass().getTableName()] = data;
+    var fieldName = column.name;
+    if (column.field.typeField !== undefined) {
+      fieldName = column.field.typeField;
+    }
+    for (var i = 0; i < elements.length; i++) {
+      data[elements[i][fieldName]] = elements[i].id;
+    }
+  });
+
+};
+CsvParser.prototype.getDataForRow = function (column, key) {
+  var value = this._cachedData[column.field.type.getClass().getTableName()][key];
+  if (key !== undefined && value === undefined) {
+    throw new Error("Cannot find element with id: " + key);
+  }
+  return value;
 };
 
 CsvParser.intToBoolean = function (variable) {

@@ -3,7 +3,8 @@ var Stop = require("../../src/models/Stop");
 
 var fs = require("fs-extra");
 
-var assert = require("assert");
+var chai = require('chai');
+var assert = chai.assert;
 
 var helper = require("../helper");
 

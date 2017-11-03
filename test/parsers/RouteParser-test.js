@@ -4,7 +4,8 @@ var Route = require("../../src/models/Route");
 
 var fs = require("fs-extra");
 
-var assert = require("assert");
+var chai = require('chai');
+var assert = chai.assert;
 
 var helper = require("../helper");
 
@@ -45,8 +46,9 @@ describe("RouteParser", function () {
       return fs.readFile("testFiles/routes/routes.txt").then(function (data) {
         return parser.parse(data);
       }).then(function () {
-        assert.false("Exception expected");
+        assert.notOk("Exception expected");
       }, function (error) {
+        console.log(error.message);
         assert.ok(error.message.indexOf("dataSet must be defined") >= 0);
       });
     });
@@ -59,7 +61,7 @@ describe("RouteParser", function () {
       }).then(function (data) {
         return parser.parse(data, dataSet);
       }).then(function () {
-        assert.false("Error expected");
+        assert.notOk("Exception expected");
       }, function (error) {
         assert.ok(error.message.indexOf("Cannot find element") >= 0);
       });

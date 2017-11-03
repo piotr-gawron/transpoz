@@ -3,7 +3,7 @@ var StopTime = require("../../src/models/StopTime");
 
 var fs = require("fs-extra");
 var chai = require('chai');
-var assert = chai.assert;    // Using Assert style
+var assert = chai.assert;
 
 var helper = require("../helper");
 

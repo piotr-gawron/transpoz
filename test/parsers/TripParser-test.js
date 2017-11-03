@@ -3,7 +3,7 @@ var Trip = require("../../src/models/Trip");
 
 var fs = require("fs-extra");
 var chai = require('chai');
-var assert = chai.assert;    // Using Assert style
+var assert = chai.assert;
 
 var helper = require("../helper");
 
@@ -42,7 +42,7 @@ describe("TripParser", function () {
     it("invalid", function () {
       var parser = new TripParser();
       return parser.parse("unk column\n1").then(function () {
-        assert.false("Exception expected");
+        assert.notOk("Exception expected");
       }, function (error) {
         assert.ok(error.message.indexOf("Unknown column") >= 0)
       });

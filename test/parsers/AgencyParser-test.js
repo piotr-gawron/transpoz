@@ -3,7 +3,8 @@ var Agency = require("../../src/models/Agency");
 
 var fs = require("fs-extra");
 
-var assert = require("assert");
+var chai = require('chai');
+var assert = chai.assert;
 
 var helper = require("../helper");
 
@@ -34,10 +35,20 @@ describe("AgencyParser", function () {
         assert.equal("pl", agency.language);
       });
     });
+    it("unknown agency", function () {
+      var parser = new AgencyParser();
+      return fs.readFile("testFiles/agency/agency.txt").then(function (data) {
+        return parser.parse(data);
+      }).then(function () {
+        assert.notOk("Exception expected");
+      }, function (error) {
+        assert.ok(error.message.indexOf("dataSet must be defined") >= 0)
+      });
+    });
     it("invalid", function () {
       var parser = new AgencyParser();
       return parser.parse("unk column\n1").then(function () {
-        assert.false("Exception expected");
+        assert.notOk("Exception expected");
       }, function (error) {
         assert.ok(error.message.indexOf("Unknown column") >= 0)
       });
