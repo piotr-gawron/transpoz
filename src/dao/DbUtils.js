@@ -15,6 +15,10 @@ DbUtils.prototype.setConnection = function (connection) {
   this._connection = connection;
 };
 
+DbUtils.prototype.closeConnection = function () {
+  return this._connection.close();
+};
+
 DbUtils.prototype.getConnection = function () {
   return this._connection;
 };

@@ -48,6 +48,7 @@ ZipDbParser.prototype.parse = function (content, filename) {
 };
 
 ZipDbParser.prototype.parseZipEntry = function (zipEntry, parser, dataSet) {
+  console.log("Processing: " + zipEntry.name);
   return zipEntry.async("string").then(function (fileContent) {
     return new parser.parse(fileContent, dataSet);
   });

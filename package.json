@@ -19,10 +19,12 @@
   "homepage": "https://github.com/piotr-gawron/transpoz#readme",
   "dependencies": {
     "bluebird": "^3.5.1",
+    "console-stamp": "^0.2.6",
     "csv-parse": "^2.0.0",
     "express": "^4.16.1",
     "istanbul": "^0.4.5",
     "jszip": "^3.1.4",
+    "priorityqueuejs": "^1.0.0",
     "sequelize": "^4.13.5",
     "sqlite3": "^3.1.13"
   },

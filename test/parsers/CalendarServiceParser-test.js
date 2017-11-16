@@ -12,6 +12,9 @@ describe("CalendarServiceParser", function () {
   before(function () {
     return helper.initDbConnection();
   });
+  after(function () {
+    return helper.closeDbConnection();
+  });
   describe("parse", function () {
     it("simple", function () {
       var parser = new CalendarServiceParser();

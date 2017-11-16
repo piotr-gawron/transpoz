@@ -14,6 +14,9 @@ describe("RouteParser", function () {
   before(function () {
     return helper.initDbConnection();
   });
+  after(function () {
+    return helper.closeDbConnection();
+  });
   describe("parse", function () {
     it("simple", function () {
       var parser = new RouteParser();

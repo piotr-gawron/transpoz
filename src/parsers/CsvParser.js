@@ -76,11 +76,13 @@ CsvParser.prototype.parse = function (params) {
     }
     return validatePromise;
   }).then(function () {
-    return modelObject.bulkCreate(objectsToCreate);
+    console.log("Create " + modelObject.getClass().getTableName());
+    return modelObject.bulkCreate(objectsToCreate, {raw: true});
   });
 };
 
 CsvParser.prototype.getDataForColumn = function (column, dataSet) {
+  console.log("Cache " + column.field.type.getClass().getTableName());
   var self = this;
   var columnType = column.field.type;
   var where = {};
@@ -102,8 +104,8 @@ CsvParser.prototype.getDataForColumn = function (column, dataSet) {
     for (var i = 0; i < elements.length; i++) {
       data[elements[i][fieldName]] = elements[i].id;
     }
+    console.log("Cache " + column.field.type.getClass().getTableName() + " done");
   });
-
 };
 CsvParser.prototype.getDataForRow = function (column, key) {
   var value = this._cachedData[column.field.type.getClass().getTableName()][key];

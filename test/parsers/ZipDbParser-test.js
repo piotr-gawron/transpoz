@@ -20,6 +20,9 @@ describe("ZipDbParser", function () {
   before(function () {
     return helper.initDbConnection();
   });
+  after(function () {
+    return helper.closeDbConnection();
+  });
   describe("parse", function () {
     var dataSet;
     it("simple with filename", function () {

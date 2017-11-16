@@ -28,6 +28,10 @@ function initDbConnection() {
   });
 }
 
+function closeDbConnection() {
+  return DbUtils.closeConnection();
+}
+
 function createDataSet(params) {
   if (params === undefined) {
     params = {};
@@ -100,5 +104,6 @@ function createDataSet(params) {
 
 module.exports = {
   initDbConnection: initDbConnection,
+  closeDbConnection: closeDbConnection,
   createDataSet: createDataSet
 };

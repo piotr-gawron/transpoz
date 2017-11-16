@@ -1,0 +1,4 @@
+stop_id,stop_code,stop_name,stop_lat,stop_lon,zone_id
+4,"MT72","Most Teatralny",52.4107374400,16.9126471700,A
+5,"MT44","Most Teatralny 2",52.4109651200,16.9137425100,A
+6,"MT43","Most Teatralny 3",52.4103354900,16.9143484000,A
