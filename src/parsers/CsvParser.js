@@ -44,6 +44,7 @@ CsvParser.prototype.parse = function (params) {
     for (var i = 1; i < rows.length; i++) {
       var row = rows[i];
       if (row.length > 1) {
+        var logData = false;
         var objectInitialData = {};
         if (modelObject.getClass().rawAttributes.dataSetId) {
           if (dataSet === undefined) {
@@ -62,10 +63,19 @@ CsvParser.prototype.parse = function (params) {
               objectInitialData[column.field] = value;
             } else {
               objectInitialData[column.field.name] = self.getDataForRow(column, value);
+              if (value==="4_23811270^+") {
+                logData = true;
+              }
             }
           }
         }
+        if (logData) {
+          console.log(row);
+          console.log(objectInitialData);
+        }
         objectsToCreate.push(objectInitialData);
+      } else {
+        console.log("skipping row: ", row);
       }
     }
     var validatePromise = Promise.resolve();
@@ -77,7 +87,8 @@ CsvParser.prototype.parse = function (params) {
     return validatePromise;
   }).then(function () {
     console.log("Create " + modelObject.getClass().getTableName());
-    return modelObject.bulkCreate(objectsToCreate, {raw: true});
+    return modelObject.bulkCreate(objectsToCreate, {raw: false});
+    // return modelObject.bulkCreate(objectsToCreate, {raw: true});
   });
 };
 

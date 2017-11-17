@@ -42,6 +42,9 @@ describe("StopTimeParser", function () {
         return stopTime.getStop();
       }).then(function (stop) {
         assert.equal(1712, stop.id);
+        return StopTime.getClass().findAll().then(function(stopTimesFromDb){
+          console.log(stopTimesFromDb.length);
+        });
       });
     });
   });

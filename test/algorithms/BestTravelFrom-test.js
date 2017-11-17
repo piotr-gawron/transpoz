@@ -80,9 +80,9 @@ describe("BestTravelFrom", function () {
           fullStopList: false
         });
         assert.equal(8, result.length);
-        console.log(result);
         for (var i = 0; i < 8; i++) {
           assert.ok(result[i]);
+          assert.ok(result[i].time);
         }
       });
     });

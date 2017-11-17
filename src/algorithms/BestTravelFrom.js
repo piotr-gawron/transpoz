@@ -20,6 +20,7 @@ BestTravelFrom.prototype.init = function () {
   promises.push(self._stopUtils.init());
   promises.push(self._calendarServiceUtils.init({dataSet: dataSet}));
   promises.push(self._travelSystem.init({dataSet: dataSet}));
+  console.log("promises");
   return Promise.all(promises);
 };
 
@@ -43,9 +44,7 @@ BestTravelFrom.prototype.getBestFrom = function (params) {
   }
 
 
-  var queue = new PriorityQueue(function (a, b) {
-    return a.value - b.value;
-  });
+  var queue = new PriorityQueue(travelSystem.priorityQueueComparator);
   stops = stopUtils.getStopsForCode(stopCode);
   if (stops === undefined) {
     throw new Error("Invalid stop code: " + stopCode);
@@ -55,7 +54,8 @@ BestTravelFrom.prototype.getBestFrom = function (params) {
     var state = {
       time: time,
       value: 0,
-      stop: stop
+      stop: stop,
+      transfers: 0
     };
     queue.enq(state);
     statesByStop[stop.id].push(state);
@@ -63,6 +63,7 @@ BestTravelFrom.prototype.getBestFrom = function (params) {
 
   while (!queue.isEmpty()) {
     state = queue.deq();
+    // console.log(state.value, state.transfers, state.time, state.stop.id);
     var states = travelSystem.computeNextStates(state, calendarServiceIds);
     for (i = 0; i < states.length; i++) {
       state = states[i];
@@ -87,15 +88,15 @@ BestTravelFrom.prototype.getBestFrom = function (params) {
       for (j = 0; j < stops.length; j++) {
         states = states.concat(statesByStop[stops[j].id]);
       }
-      result.push(self.getBestState(states));
+      result.push(self.getBestState(states, stops[0]));
     }
   }
   return result;
 };
 
-BestTravelFrom.prototype.getBestState = function (states) {
+BestTravelFrom.prototype.getBestState = function (states, stop) {
   if (states.length === 0) {
-    return null;
+    return {stop: stop};
   }
   var result = states[0];
   for (var i = 0; i < states.length; i++) {

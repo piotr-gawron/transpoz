@@ -8,6 +8,7 @@ function TripUtils() {
 }
 
 TripUtils.prototype.init = function (params) {
+  console.log("trip utils 1");
   var self = this;
   var dataSet = params.dataSet;
   self._dataSet = dataSet;
@@ -16,29 +17,28 @@ TripUtils.prototype.init = function (params) {
   self._tripsByTripId = [];
   var where = {"dataSetId": dataSet.id};
   return Stop.getClass().findAll().then(function (stops) {
+    console.log("trip utils 2");
     for (var i = 0; i < stops.length; i++) {
       var stop = stops[i];
       self._stopTimesByStopId[stop.id] = [];
     }
-    return StopTime.getClass().findAll({where: where})
-  }).then(function (stopTimes) {
-    for (var i = 0; i < stopTimes.length; i++) {
-      var stopTime = stopTimes[i];
-      var tripStops = self._stopTimesByTripId[stopTime.tripId];
-      if (tripStops === undefined) {
-        self._stopTimesByTripId[stopTime.tripId] = [];
-        tripStops = self._stopTimesByTripId[stopTime.tripId];
-      }
-      tripStops[stopTime.stopSequence] = stopTime;
-
-      var stopTimesByStopId = self._stopTimesByStopId[stopTime.stopId];
-      stopTimesByStopId.push(stopTime);
-    }
     return Trip.getClass().findAll({where: where});
   }).then(function (trips) {
+    console.log("trip utils 3");
     for (var i = 0; i < trips.length; i++) {
       var trip = trips[i];
       self._tripsByTripId[trip.id] = trip;
+      self._stopTimesByTripId[trip.id] = [];
+    }
+    return StopTime.getClass().findAll({where: where})
+  }).then(function (stopTimes) {
+    console.log("trip utils 4");
+    for (var i = 0; i < stopTimes.length; i++) {
+      var stopTime = stopTimes[i];
+      var tripStops = self._stopTimesByTripId[stopTime.tripId];
+      tripStops[stopTime.stopSequence] = stopTime;
+      var stopTimesByStopId = self._stopTimesByStopId[stopTime.stopId];
+      stopTimesByStopId.push(stopTime);
     }
   });
 };
@@ -68,10 +68,15 @@ TripUtils.prototype.getNextStopsForTripId = function (params) {
   var result = [];
   var currentStopFound = false;
   for (var i = 0; i < stopTimes.length; i++) {
-    if (currentStopFound) {
-      result.push(stopTimes[i]);
-    } else if (stopTimes[i].stopId === params.stop.id) {
-      currentStopFound = true;
+    var stopTime = stopTimes[i];
+    if (stopTime === undefined) {
+      console.log("Problematic trip: " + params.tripId + ". Missing stop: " + i);
+    } else {
+      if (currentStopFound) {
+        result.push(stopTime);
+      } else if (stopTime.stopId === params.stop.id) {
+        currentStopFound = true;
+      }
     }
   }
   return result;

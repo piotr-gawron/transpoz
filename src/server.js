@@ -17,8 +17,7 @@ const sequelize = new Sequelize('sqlite://sqlite/db', {
   logging: false
 });
 var filename;
-var bestTravelFrom;
-//filename = "./testFiles/20170906_20170917.zip";
+// filename = "./testFiles/20170906_20170917.zip";
 sequelize.authenticate().then(function () {
   DbUtils.setConnection(sequelize);
   return DbUtils.initDb();
@@ -43,6 +42,8 @@ sequelize.authenticate().then(function () {
   require('./routes')(app);
   app.listen(3001);
   console.log('Listening on port 3001...');
+}).catch(function (e) {
+  console.log(e);
 });
 
 

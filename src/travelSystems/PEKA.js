@@ -12,7 +12,7 @@ function PEKA() {
 PEKA.prototype.init = function (params) {
   var self = this;
   self._dataSet = params.dataSet;
-  self._maxTransfers = 2;
+  self._maxTransfers = 3;
   self._timeForTransfer = "00:02:00";
   self._timeForStopChange = "00:05:00";
   self._maxTimeForTransfer = "00:20:00";
@@ -35,6 +35,9 @@ PEKA.prototype.computeNextStates = function (params, calendarServiceIds) {
   var transfers = params.transfers;
   if (transfers === undefined) {
     transfers = 0;
+  }
+  if (transfers > self._maxTransfers) {
+    return [];
   }
 
   var value;
@@ -80,9 +83,6 @@ PEKA.prototype.computeNextStates = function (params, calendarServiceIds) {
 PEKA.prototype.computeNextStatesForStop = function (params) {
   var self = this;
   var type = params.type;
-  if (params.transfers > self._maxTransfers) {
-    return [];
-  }
   var result = [];
 
   var tripUtils = self._tripUtils;
@@ -144,6 +144,14 @@ PEKA.prototype.padInt = function (num, size) {
   var s = num + "";
   while (s.length < size) s = "0" + s;
   return s;
+};
+
+PEKA.prototype.priorityQueueComparator = function (a, b) {
+  if (a.transfers === b.transfers) {
+    return b.value - a.value;
+  } else {
+    return b.transfers - a.transfers;
+  }
 };
 
 
