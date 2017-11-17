@@ -4,6 +4,7 @@
   "description": "",
   "main": "src/server.js",
   "scripts": {
+    "start": "node src/server.js",
     "test-coverage": "istanbul cover node_modules/mocha/bin/_mocha -- --recursive test",
     "test": "mocha --recursive test"
   },
