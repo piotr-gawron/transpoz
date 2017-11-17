@@ -1,8 +1,6 @@
 var Promise = require('bluebird');
 var PriorityQueue = require('priorityqueuejs');
 
-var Promise = require('bluebird');
-
 var StopUtils = require('../utils/StopUtils');
 var TripUtils = require('../utils/TripUtils');
 
@@ -65,7 +63,8 @@ PEKA.prototype.computeNextStates = function (params, calendarServiceIds) {
     type: type,
     value: value,
     transfers: transfers,
-    calendarServiceIds: calendarServiceIds
+    calendarServiceIds: calendarServiceIds,
+    previous: params
   }));
 
   if (transfers !== 0) {
@@ -82,7 +81,8 @@ PEKA.prototype.computeNextStates = function (params, calendarServiceIds) {
         type: type,
         value: value,
         transfers: transfers,
-        calendarServiceIds: calendarServiceIds
+        calendarServiceIds: calendarServiceIds,
+        previous: params
       }));
     }
   }
@@ -100,13 +100,19 @@ PEKA.prototype.computeNextStatesForStop = function (params) {
   for (var i = 0; i < trips.length; i++) {
     var trip = trips[i];
     var stopTimes = tripUtils.getNextStopsForTripId({tripId: trip.id, stop: params.stop});
+    var stopCounter = 1;
     for (var j = 0; j < stopTimes.length; j++) {
       var stopTime = stopTimes[j];
       var value = params.value;
       if (type === "TIME") {
         value += self.timeToMinutes(self.subTime(stopTime.arrivalTime, params.minTime));
       } else if (type === "MONEY") {
-        value += j + 1;
+        if (j > 0) {
+          if (!self._stopUtils.equalStopPrefixesForStopId(stopTime.stopId, stopTimes[j - 1].stopId)) {
+            stopCounter++;
+          }
+        }
+        value += stopCounter;
       } else {
         throw new Error("Invalid type: " + type + ". Expected 'TIME' or 'MONEY'");
       }
@@ -115,7 +121,12 @@ PEKA.prototype.computeNextStatesForStop = function (params) {
         time: stopTime.arrivalTime,
         value: value,
         stop: self._stopUtils.getStopById(stopTime.stopId),
-        transfers: params.transfers + 1
+        transfers: params.transfers + 1,
+        previous: params.previous,
+        route: tripUtils.getRouteByRouteId(trip.routeId),
+        trip: trip,
+        startStopTime: stopTimes.startStopTime,
+        endStopTime: stopTime
       };
       result.push(state);
     }

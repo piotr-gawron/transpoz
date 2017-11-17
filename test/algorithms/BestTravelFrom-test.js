@@ -83,6 +83,7 @@ describe("BestTravelFrom", function () {
         for (var i = 0; i < 8; i++) {
           assert.ok(result[i]);
           assert.ok(result[i].time);
+          // console.log(result[i].value, result[i].transfers, result[i].stop.name);
         }
       });
     });

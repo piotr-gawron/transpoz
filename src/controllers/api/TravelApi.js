@@ -35,6 +35,20 @@ function getBestTravelFrom(params) {
 
 }
 
+function getHistory(entry) {
+  var result = [];
+  while (entry.previous !== undefined) {
+    result.push(entry.endStopTime.arrivalTime);
+    result.push(entry.stop.name);
+    result.push(entry.startStopTime.departureTime);
+    result.push(entry.previous.stop.name);
+    result.push(entry.route.shortName);
+    entry = entry.previous;
+  }
+  result.reverse();
+  return result;
+}
+
 function sendCsv(entries, res) {
   var result = [];
   var header = ["StopCode", "Transfers", "Value", "Time"];
@@ -43,10 +57,11 @@ function sendCsv(entries, res) {
   for (var i = 0; i < entries.length; i++) {
     var entry = entries[i];
     var row = [entry.stop.code.replace(/[0-9]/g, ''), entry.transfers, entry.value, entry.time];
+    row = row.concat(getHistory(entry));
     result.push(row);
   }
 
-  return csvGenerate(result).then(function(data){
+  return csvGenerate(result).then(function (data) {
     res.set('Content-Type', 'text/csv');
     res.send(data);
   });
@@ -57,7 +72,13 @@ function sendJson(entries, res) {
 
   for (var i = 0; i < entries.length; i++) {
     var entry = entries[i];
-    result.push({stopCode: entry.stop.code.replace(/[0-9]/g, ''), transfers: entry.transfers, value: entry.value, time: entry.time});
+    result.push({
+      stopCode: entry.stop.code.replace(/[0-9]/g, ''),
+      transfers: entry.transfers,
+      value: entry.value,
+      time: entry.time,
+      trip: getHistory(entry)
+    });
   }
   res.json(result);
 }

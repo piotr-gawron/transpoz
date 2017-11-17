@@ -20,7 +20,6 @@ BestTravelFrom.prototype.init = function () {
   promises.push(self._stopUtils.init());
   promises.push(self._calendarServiceUtils.init({dataSet: dataSet}));
   promises.push(self._travelSystem.init({dataSet: dataSet}));
-  console.log("promises");
   return Promise.all(promises);
 };
 
@@ -101,6 +100,8 @@ BestTravelFrom.prototype.getBestState = function (states, stop) {
   var result = states[0];
   for (var i = 0; i < states.length; i++) {
     if (states[i].value < result.value) {
+      result = states[i];
+    } else if (states[i].value === result.value && states[i].time < result.time) {
       result = states[i];
     }
   }

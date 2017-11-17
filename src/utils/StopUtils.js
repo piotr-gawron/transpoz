@@ -33,6 +33,12 @@ StopUtils.prototype.init = function () {
   });
 };
 
+StopUtils.prototype.equalStopPrefixesForStopId = function (stopId1, stopId2) {
+  var self = this;
+  return getStopPrefix(self.getStopById(stopId1).code) === getStopPrefix(self.getStopById(stopId2).code);
+};
+
+
 StopUtils.prototype.getStopsForCode = function (stopCode) {
   return this._stopByPrefix[getStopPrefix(stopCode)];
 };
