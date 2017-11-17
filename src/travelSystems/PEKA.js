@@ -16,6 +16,7 @@ PEKA.prototype.init = function (params) {
   self._timeForTransfer = "00:02:00";
   self._timeForStopChange = "00:05:00";
   self._maxTimeForTransfer = "00:20:00";
+  self._maxStartWaitingTime = "01:00:00";
   self._type = "MONEY";
   self._tripUtils = new TripUtils();
   self._stopUtils = new StopUtils();
@@ -30,14 +31,20 @@ PEKA.prototype.computeNextStates = function (params, calendarServiceIds) {
   var type = self._type;
 
   var stop = params.stop;
-  var maxTime = self.addTime(params.time, self._maxTimeForTransfer);
-  var minTime = self.addTime(params.time, self._timeForTransfer);
+
   var transfers = params.transfers;
   if (transfers === undefined) {
     transfers = 0;
   }
   if (transfers > self._maxTransfers) {
     return [];
+  }
+
+  var maxTime = self.addTime(params.time, self._maxTimeForTransfer);
+  var minTime = self.addTime(params.time, self._timeForTransfer);
+  if (transfers === 0) {
+    minTime = params.time;
+    maxTime = self.addTime(params.time, self._maxStartWaitingTime);
   }
 
   var value;
@@ -61,7 +68,9 @@ PEKA.prototype.computeNextStates = function (params, calendarServiceIds) {
     calendarServiceIds: calendarServiceIds
   }));
 
-  minTime = self.addTime(minTime, self._timeForStopChange);
+  if (transfers !== 0) {
+    minTime = self.addTime(minTime, self._timeForStopChange);
+  }
 
   var stops = self._stopUtils.getStopsForCode(stop.code);
   for (var i = 0; i < stops.length; i++) {
