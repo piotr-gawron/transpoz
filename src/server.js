@@ -38,22 +38,11 @@ sequelize.authenticate().then(function () {
     console.log("No processing");
   }
 }).then(function () {
-  return DataSet.getClass().findById(1);
-}).then(function (dataSet) {
-  bestTravelFrom = new BestTravelFrom({dataSet: dataSet, travelSystem: new PEKA()});
-  return bestTravelFrom.init();
-}).then(function () {
-  var result = bestTravelFrom.getBestFrom({stopCode: "FRWO", time: "08:00:00"});
-  for (var i = 0; i < result.length; i++) {
-    if (result[i] !== null) {
-      console.log(result[i].stop.name + " (" + result[i].stop.code + ")", result[i].value);
-    }
-  }
+  var app = express();
+
+  require('./routes')(app);
+  app.listen(3001);
+  console.log('Listening on port 3001...');
 });
 
 
-// var app = express();
-//
-// require('./routes')(app);
-// app.listen(3001);
-// console.log('Listening on port 3001...');
