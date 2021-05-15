@@ -17,7 +17,7 @@ const sequelize = new Sequelize('sqlite://sqlite/db', {
   logging: false
 });
 var filename;
-// filename = "./testFiles/20170906_20170917.zip";
+// filename = "./testFiles/20210430_20210502.zip";
 sequelize.authenticate().then(function () {
   DbUtils.setConnection(sequelize);
   return DbUtils.initDb();
