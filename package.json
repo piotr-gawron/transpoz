@@ -27,7 +27,7 @@
     "istanbul": "^0.4.5",
     "jszip": "^3.1.4",
     "priorityqueuejs": "^1.0.0",
-    "sequelize": "^5.15.1",
+    "sequelize": "^4.44.4",
     "sqlite3": "^3.1.13"
   },
   "devDependencies": {
