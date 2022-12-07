@@ -23,7 +23,7 @@
     "console-stamp": "^0.2.6",
     "csv-parse": "^2.0.0",
     "csv-stringify": "^2.0.0",
-    "express": "^4.16.1",
+    "express": "^4.17.3",
     "istanbul": "^0.4.5",
     "jszip": "^3.1.4",
     "priorityqueuejs": "^1.0.0",
